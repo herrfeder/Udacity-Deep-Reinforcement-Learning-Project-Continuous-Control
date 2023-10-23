@@ -11,6 +11,8 @@ env = UnityEnvironment(file_name='Reacher_Linux/Reacher.x86_64')
 brain_name = env.brain_names[0]
 brain = env.brains[brain_name]
 
+env_info = env.reset(train_mode=True)[brain_name]
+
 # number of agents
 num_agents = len(env_info.agents)
 print('Number of agents:', num_agents)
@@ -27,8 +29,8 @@ print('The state for the first agent looks like:', states[0])
 
 agent = Agent(state_size=state_size, action_size=action_size, random_seed=0)
 
-episodes = 10000
-timesteps = 3000
+episodes = 1000
+timesteps = 5000
 scores = []
 scores_deque = deque(maxlen=100)
 
@@ -52,16 +54,16 @@ for episode in range(1, episodes+1):
         if done:                                       # exit loop if episode finished
             break
 
-        scores_deque.append(score)       # save most recent score
-        scores.append(score)             # save most recent score
+    scores_deque.append(score)       # save most recent score
+    scores.append(score)             # save most recent score
               
-        if episode % 10 == 0:
-            print('\rEpisode {}\tAverage Score: {:.2f}'.format(episode, np.mean(scores_deque)))
-            torch.save(agent.actor_local.state_dict(), 'checkpoint_actor.pth')
-            torch.save(agent.critic_local.state_dict(), 'checkpoint_critic.pth')
-        
-        if np.mean(scores_deque)>=30.0:
-            print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(episode, np.mean(scores_deque)))
-            torch.save(agent.actor_local.state_dict(), 'checkpoint_actor.pth')
-            torch.save(agent.critic_local.state_dict(), 'checkpoint_critic.pth')
-            break
+    if episode % 10 == 0:
+        print('\rEpisode {}\tAverage Score: {:.2f}'.format(episode, np.mean(scores_deque)))
+        torch.save(agent.actor_local.state_dict(), 'checkpoint_actor.pth')
+        torch.save(agent.critic_local.state_dict(), 'checkpoint_critic.pth')
+    
+    if np.mean(scores_deque)>=30.0:
+        print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(episode, np.mean(scores_deque)))
+        torch.save(agent.actor_local.state_dict(), 'checkpoint_actor.pth')
+        torch.save(agent.critic_local.state_dict(), 'checkpoint_critic.pth')
+        break
