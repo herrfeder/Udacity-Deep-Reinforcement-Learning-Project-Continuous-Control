@@ -9,13 +9,15 @@ import torch
 import torch.nn.functional as F
 import torch.optim as optim
 
-BUFFER_SIZE = int(1e4)  # replay buffer size
-BATCH_SIZE = 128        # minibatch size
+BUFFER_SIZE = int(1e5)  # replay buffer size
+BATCH_SIZE = 128       # minibatch size
 GAMMA = 0.99            # discount factor
 TAU = 1e-3              # for soft update of target parameters
-LR_ACTOR = 2e-4         # learning rate of the actor 
-LR_CRITIC = 2e-4        # learning rate of the critic
+LR_ACTOR = 1e-4         # learning rate of the actor 
+LR_CRITIC = 1e-3        # learning rate of the critic
 WEIGHT_DECAY = 0        # L2 weight decay
+NOISE_THETA = 0.15      # mean reversion strength of the OU process
+NOISE_SIGMA = 0.2       # noise strength added at each timestep to the OU process
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -46,7 +48,7 @@ class Agent():
         self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr=LR_CRITIC, weight_decay=WEIGHT_DECAY)
 
         # Noise process
-        self.noise = OUNoise(action_size, random_seed)
+        self.noise = OUNoise(action_size, random_seed, theta=NOISE_THETA, sigma=NOISE_SIGMA)
 
         # Replay memory
         self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, random_seed)
@@ -70,8 +72,7 @@ class Agent():
         self.actor_local.train()
         if add_noise:
             action += self.noise.sample()
-        action = (action + 1.0) / 2.0
-        return np.clip(action, 0, 1)
+        return np.clip(action, -1, 1)
 
 
     def reset(self):
@@ -93,8 +94,8 @@ class Agent():
 
         # ---------------------------- update critic ---------------------------- #
         # Get predicted next-state actions and Q values from target models
-        actions_next = self.actor_target(next_states)
-        Q_targets_next = self.critic_target(next_states, actions_next)
+        actions_next = self.actor_target(next_states.to(device))
+        Q_targets_next = self.critic_target(next_states.to(device), actions_next.to(device))
         # Compute Q targets for current states (y_i)
         Q_targets = rewards + (gamma * Q_targets_next * (1 - dones))
         # Compute critic loss
@@ -117,6 +118,7 @@ class Agent():
         # ----------------------- update target networks ----------------------- #
         self.soft_update(self.critic_local, self.critic_target, TAU)
         self.soft_update(self.actor_local, self.actor_target, TAU)                     
+
 
     def soft_update(self, local_model, target_model, tau):
         """Soft update model parameters.

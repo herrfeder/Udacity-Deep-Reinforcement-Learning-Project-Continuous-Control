@@ -29,21 +29,19 @@ print('The state for the first agent looks like:', states[0])
 
 agent = Agent(state_size=state_size, action_size=action_size, random_seed=0)
 
-episodes = 1000
-timesteps = 5000
+episodes = 100
+timesteps = 1000
 scores = []
 scores_deque = deque(maxlen=100)
 
 for episode in range(1, episodes+1): 
-
     env_info = env.reset(train_mode=True)[brain_name]
-    agent.reset()
     state = env_info.vector_observations[0]            # get the current state
+    agent.reset()
     score = 0
     
     for t in range(timesteps):
         action = agent.act(state)                      # select an action
-
         env_info = env.step(action)[brain_name]        # send the action to the environment
         next_state = env_info.vector_observations[0]   # get the next state
         reward = env_info.rewards[0]                   # get the reward
@@ -56,7 +54,9 @@ for episode in range(1, episodes+1):
 
     scores_deque.append(score)       # save most recent score
     scores.append(score)             # save most recent score
-              
+    
+    print('\rEpisode {}\tAverage Score: {:.2f}'.format(episode, np.mean(scores_deque)))
+
     if episode % 10 == 0:
         print('\rEpisode {}\tAverage Score: {:.2f}'.format(episode, np.mean(scores_deque)))
         torch.save(agent.actor_local.state_dict(), 'checkpoint_actor.pth')
