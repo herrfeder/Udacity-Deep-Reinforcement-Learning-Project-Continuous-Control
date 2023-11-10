@@ -1,3 +1,26 @@
+```
+##Reacher Environment##
+
+# Environment Details
+- Number of Agents: 1
+- Size of Action (Continuous): 4 
+- Number of state variables: 33
+
+# Hyper Parameters
+{'batch_size': 256,
+ 'buffer_size': 100000,
+ 'gamma': 0.99,
+ 'lin_full_con_01': 128,
+ 'lin_full_con_02': 128,
+ 'lr_actor': 0.001,
+ 'lr_critic': 0.001,
+ 'noise_scalar': 0.25,
+ 'tau': 0.001,
+ 'weight_decay': 0}
+```
+
+
+
 [//]: # (Image References)
 
 [image1]: https://user-images.githubusercontent.com/10624937/43851024-320ba930-9aff-11e8-8493-ee547c6af349.gif "Trained Agent"

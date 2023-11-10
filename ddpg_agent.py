@@ -2,20 +2,11 @@ import numpy as np
 import random
 import copy
 from collections import namedtuple, deque
-
-from model import Actor, Critic
-
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
 
-BUFFER_SIZE = int(1e5)  # replay buffer size
-BATCH_SIZE = 256        # minibatch size
-GAMMA = 0.99            # discount factor
-TAU = 1e-3              # for soft update of target parameters
-LR_ACTOR = 1e-3         # learning rate of the actor 
-LR_CRITIC = 1e-3        # learning rate of the critic
-WEIGHT_DECAY = 0        # L2 weight decay
+from model import Actor, Critic
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -24,9 +15,18 @@ class Agent():
     
     def __init__(
             self, state_size, action_size, random_seed,
-            buffer_size=int(1e5), batch_size=256, gamma=0.99,
-            tau=1e-3, lr_actor=1e-3, lr_critic=1e-3,
-            weight_decay=0, noise_scalar=0.25):
+            hyperparameters={
+                "buffer_size": int(1e5),
+                "batch_size": 256,
+                "lin_full_con_01": 128,
+                "lin_full_con_02": 128,
+                "gamma": 0.99,
+                "tau": 1e-3,
+                "lr_actor": 1e-3,
+                "lr_critic": 1e-3,
+                "weight_decay": 0,
+                "noise_scalar": 0.25}
+            ):
         """Initialize an Agent object.
         
         Params
@@ -36,6 +36,8 @@ class Agent():
             random_seed (int): random seed
             buffer_size (int): replay buffer size
             batch_size (int): minibatch size
+            lin_full_con_01 (int): Output Length first Fully Connected Layer
+            lin_full_con_02 (int): Input Length second Fully Connected Layer
             gamma (float): discount factor
             tau (float): interpolation factor for soft update of target parameters
             lr_actor (float): learning rate of actor
@@ -46,21 +48,27 @@ class Agent():
         self.state_size = state_size
         self.action_size = action_size
         self.seed = random.seed(random_seed)
-        self.buffer_size = buffer_size
-        self.batch_size = batch_size
-        self.gamma = gamma
-        self.tau = tau
-        self.noise_scalar = noise_scalar
+        self.buffer_size = hyperparameters["buffer_size"]
+        self.batch_size = hyperparameters["batch_size"]
+        self.gamma = hyperparameters["gamma"]
+        self.tau = hyperparameters["tau"]
+        self.lin_full_con_01 = hyperparameters["lin_full_con_01"]
+        self.lin_full_con_02 = hyperparameters["lin_full_con_02"]
+        self.lr_actor = hyperparameters["lr_actor"]
+        self.lr_critic = hyperparameters["lr_critic"]
+        self.weight_decay = hyperparameters["weight_decay"]
+        self.noise_scalar = hyperparameters["noise_scalar"]
+        self.hyperparameters = hyperparameters
 
         # Actor Network (w/ Target Network)
-        self.actor_local = Actor(state_size, action_size, random_seed).to(device)
-        self.actor_target = Actor(state_size, action_size, random_seed).to(device)
-        self.actor_optimizer = optim.Adam(self.actor_local.parameters(), lr=lr_actor)
+        self.actor_local = Actor(state_size, action_size, random_seed, fc1_units=self.lin_full_con_01, fc2_units=self.lin_full_con_02).to(device)
+        self.actor_target = Actor(state_size, action_size, random_seed, fc1_units=self.lin_full_con_01, fc2_units=self.lin_full_con_02).to(device)
+        self.actor_optimizer = optim.Adam(self.actor_local.parameters(), lr=self.lr_actor)
 
         # Critic Network (w/ Target Network)
-        self.critic_local = Critic(state_size, action_size, random_seed).to(device)
-        self.critic_target = Critic(state_size, action_size, random_seed).to(device)
-        self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr=lr_critic, weight_decay=weight_decay)
+        self.critic_local = Critic(state_size, action_size, random_seed, fc1_units=self.lin_full_con_01, fc2_units=self.lin_full_con_02).to(device)
+        self.critic_target = Critic(state_size, action_size, random_seed, fc1_units=self.lin_full_con_01, fc2_units=self.lin_full_con_02).to(device)
+        self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr=self.lr_critic, weight_decay=self.weight_decay)
         
         self.hard_copy_weights(self.actor_target, self.actor_local)
         self.hard_copy_weights(self.critic_target, self.critic_local)
@@ -109,7 +117,6 @@ class Agent():
             gamma (float): discount factor
         """
         states, actions, rewards, next_states, dones = experiences
-
         # ---------------------------- update critic ---------------------------- #
         # Get predicted next-state actions and Q values from target models
         actions_next = self.actor_target(next_states)
