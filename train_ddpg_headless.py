@@ -6,7 +6,7 @@ from collections import deque
 import torch
 from pprint import PrettyPrinter
 
-def init_environment():
+def init_environment(hyperparameters=""):
     # initialise the headless unity environment
     env = UnityEnvironment(file_name='Reacher_Linux/Reacher.x86_64')
 
@@ -21,7 +21,8 @@ def init_environment():
     states = env_info.vector_observations
     state_size = states.shape[1]
     # initialize agent with environment facts and hyperparameters for actor critic model components
-    agent = Agent(state_size=state_size, action_size=action_size, random_seed=0)
+    if hyperparameters:
+        agent = Agent(state_size=state_size, action_size=action_size, random_seed=0, hyperparameters=hyperparameters)
     
     init_output = \
     """##Reacher Environment##
@@ -108,4 +109,5 @@ def ddpg_runtime(n_episodes=1000, reward_goal=30, max_t=1000, window_size=100):
     return scores
 
 
-scores = ddpg(n_episodes=1000)
+if __name__ == "__main__":
+    scores = ddpg_runtime(n_episodes=1000)

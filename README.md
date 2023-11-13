@@ -3,7 +3,7 @@
 
 | Agent with untrained random actions | Trained Agent | 
 |--------------------------------------|--------------------------------------|
-| ![](https://github.com/herrfeder/AI_Cybersecurity_IDS_PoC/raw/main/screenshots/analysis_dashboard.png) | ![](https://github.com/herrfeder/AI_Cybersecurity_IDS_PoC/raw/main/screenshots/model_performance.png) | 
+| ![](images/random_reacher.gif) | ![](images/trained_reacher.gif) | 
 
 
 ## Introduction
@@ -22,9 +22,15 @@ The goal is to train the robotic arm to stay as long in the goal location until 
 
 The training will be done in a headless python environment instead of a jupyter notebook as it will take several hours.
 
-## Included files
+## Included important files
 
-  * `cc_headless.py`: Training script
+  * `run_trained_ddpg_models.ipynb`: Compare visually a random action DDPG-Agent with a trained Agent using Unity environment with visual frontend -> [Linux Environment](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Reacher/one_agent/Reacher_Linux.zip)
+  * `train_ddpg_headless.py`: Training script to run on a headless server with non visual Unity environment -> [Linux Headless Environment](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Reacher/one_agent/Reacher_Linux_NoVis.zip)
+  * `ddpg_agent.py`: includes the class for the agent, that initialises the models and acts and learns (with the initialised models) against the given Unity environment
+  * `model.py`: has the Pytorch-based architectures for the Actor and Critic
+  * `checkpoint_actor.pth` and `checkpoint_critic.pth`: the checkpoint weights for the models that reached a consecutive reward of +30 over 100 episodes
+  * `last_scores.txt`: list of numbers which represents the reward development over all training episodes
+  
 
 ## Installation
 

@@ -76,6 +76,11 @@ class Agent():
         # Replay memory
         self.memory = ReplayBuffer(self.action_size, self.buffer_size, self.batch_size, random_seed)
     
+    def load_checkpoints(self):
+        self.actor_local.load_state_dict(torch.load('checkpoint_actor.pth'))
+        self.critic_local.load_state_dict(torch.load('checkpoint_critic.pth'))
+    
+    
     def hard_copy_weights(self, target, source):
         """ copy weights from source to target network (part of initialization)"""
         for target_param, param in zip(target.parameters(), source.parameters()):
