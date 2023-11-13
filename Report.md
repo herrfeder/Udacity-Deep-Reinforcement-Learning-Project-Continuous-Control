@@ -1,4 +1,4 @@
-### Training Specs
+# Training Specs
 
   * I used the following environment incoporating only **one training agent**. 
 The hyperparameters where choosen with some assumptions but in the end the best results where found by trying different combinations:
@@ -29,11 +29,17 @@ The hyperparameters where choosen with some assumptions but in the end the best 
   
 ![](images/screenshot_finished_training.png)
 
-### Important Parts
+![](images/reacher_training_diagram.png)
+
+# Important Parts
+
+I've used the [ddpg-pendulum](https://github.com/udacity/deep-reinforcement-learning/tree/master/ddpg-pendulum) example as the basis for my implementation. The biggest part of this example is used without further modification.
+
+## Model
 
 
 
-### Tuned Hyperparameters
+# Tuned Hyperparameters
 
  * **Dimension Fully Connected Layer** 
    * tried different sizes of the Fully Connected Layers
