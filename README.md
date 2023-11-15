@@ -29,6 +29,20 @@ The training will be done in a headless python environment instead of a jupyter 
   * `checkpoint_actor.pth` and `checkpoint_critic.pth`: the checkpoint weights for the models that reached a consecutive reward of +30 over 100 episodes
   * `last_scores.txt`: list of numbers which represents the reward development over all training episodes
   
+## How to run
+
+### Training
+
+To train your DDPG Agent, run:
+
+  * `python train_ddpg_headless.py`
+  
+### See acting agent
+
+To check how the agent is acting in the Reacher environment with visual feedback and check your trained model weights:
+
+  * Run the cells in `run_trained_ddpg_models.ipynb` notebook
+
 
 ## Installation
 
