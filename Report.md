@@ -43,17 +43,17 @@ For applying actual deep learning, we need some kind of Buffer, from with traini
 To assist the exploration of the agent an additional noise component is introduced that can be quite complex, to have the right amount of "disturbance". (I used a single static value instead, see below)
 
 The training and learning is happening in steps over the episodes happening in the environment.
-Initially, when starting:
-  * the actor and critic networks are initialised with random weights
-  *  he Replay Buffer gets initialised
-For the beginning of every episode:
-  * the noise process gets initialised for a fresh start
-During each step of a episode:
-  * according to the current policy an action is executed, the reward and and the next state gets collected
-  * each step we are storing actions and states into the Replay Buffer and take a sample from it
-  * this sample is used to update the critic by minimizing the loss between original and updated Q-Values
-  * and updating the actor by applying Gradient Ascent to the sampled policy gradient
-  * in the end of the step the target networks gets updated
+  * Initially, when starting:
+    * the actor and critic networks are initialised with random weights
+    *  he Replay Buffer gets initialised
+  * For the beginning of every episode:
+    * the noise process gets initialised for a fresh start
+  * During each step of a episode:
+    * according to the current policy an action is executed, the reward and and the next state gets collected
+    * each step we are storing actions and states into the Replay Buffer and take a sample from it
+    * this sample is used to update the critic by minimizing the loss between original and updated Q-Values
+    * and updating the actor by applying Gradient Ascent to the sampled policy gradient
+    * in the end of the step the target networks gets updated
 
 
 ## Model
