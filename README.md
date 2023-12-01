@@ -5,6 +5,7 @@
 |--------------------------------------|--------------------------------------|
 | ![](images/random_reacher.gif) | ![](images/trained_reacher.gif) | 
 
+> Please see the [Report](https://github.com/herrfeder/Udacity-Deep-Reinforcement-Learning-Project-Continuous-Control/blob/main/Report.md) for a detailed description of my approach.
 
 ## Introduction
 
